@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cat /home/camilogzlez/code/camilogzlez/EPITECH/mnist_ia/main.py 2>/dev/null | head -30 && ls /home/camilogzlez/code/camilogzlez/EPITECH/travel_order_disorder/T-AIA-911-NCE_1/ 2>/dev/null)",
+      "Read(//home/camilogzlez/code/camilogzlez/EPITECH/mnist_ia/**)",
+      "Read(//home/camilogzlez/code/camilogzlez/EPITECH/travel_order_disorder/T-AIA-911-NCE_1/**)",
+      "Bash(curl -s http://localhost:5173/src/components/HeroSection.vue)",
+      "Bash(echo \"EXIT: $?\")",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:github.com)"
+    ]
+  }
+}
