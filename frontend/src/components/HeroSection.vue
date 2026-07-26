@@ -12,19 +12,13 @@
       </div>
 
       <div class="hero-heading">
-        <h1>
-          <span class="text-outline">Camilo</span><br />
+        <h1 id="hero-name">
+          <span id="hero-first-name" class="text-outline">Camilo</span><br />
           <span>González</span>
         </h1>
         <p class="hero-sub">
           From raw data to real products. <br /> I engineer the intelligence behind the interface.
         </p>
-        <a href="#projects" class="hero-cta">
-          See my work
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-            <path d="M1 7h12M7 1l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </a>
       </div>
     </div>
 
@@ -85,20 +79,6 @@ defineEmits(['filter'])
   margin-bottom: 40px;
 }
 
-.hero-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  border-bottom: 1.5px solid var(--ink);
-  padding-bottom: 4px;
-  transition: gap 0.25s ease, opacity 0.2s;
-}
-.hero-cta:hover { gap: 16px; opacity: 0.7; }
-
 .scroll-indicator {
   position: absolute;
   bottom: 32px;
@@ -114,18 +94,18 @@ defineEmits(['filter'])
   font-size: 10px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--ink-light);
+  color: var(--ink-mid);
 }
 
 .scroll-line {
-  width: 1px;
+  width: 1.5px;
   height: 40px;
-  background: linear-gradient(to bottom, var(--ink-light), transparent);
+  background: linear-gradient(to bottom, var(--ink-mid), transparent);
   animation: scrollPulse 2s ease-in-out infinite;
 }
 
 @keyframes scrollPulse {
-  0%, 100% { opacity: 0.4; transform: scaleY(1); }
+  0%, 100% { opacity: 0.6; transform: scaleY(1); }
   50% { opacity: 1; transform: scaleY(0.6); }
 }
 
@@ -135,5 +115,13 @@ defineEmits(['filter'])
     padding-top: 100px;
   }
   .hero-tags { flex-direction: row; flex-wrap: wrap; }
+}
+
+@media (max-width: 700px) {
+  /* no room beside the text for the wave illustration on narrow screens --
+     go fully solid so it doesn't show through and clash with the heading */
+  .hero {
+    background: var(--bg);
+  }
 }
 </style>
