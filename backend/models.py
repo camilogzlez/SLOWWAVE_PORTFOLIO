@@ -1,7 +1,11 @@
+import os
+
 from sqlalchemy import Column, Integer, String, Text, JSON, create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-DATABASE_URL = "sqlite:///./portfolio.db"
+# In production this points at the Railway volume mount (e.g.
+# sqlite:////data/portfolio.db) so the database survives redeploys.
+DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///./portfolio.db")
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(bind=engine)
 Base = declarative_base()

@@ -1,0 +1,57 @@
+{
+  "nav": {
+    "work": "Projets",
+    "about": "À propos",
+    "contact": "Contact"
+  },
+  "hero": {
+    "subLine1": "Des données brutes aux produits concrets.",
+    "subLine2": "Je conçois l'intelligence derrière l'interface.",
+    "scroll": "défiler"
+  },
+  "projects": {
+    "sectionLabel": "TRAVAUX SÉLECTIONNÉS",
+    "titleOutline": "Mes",
+    "titleRest": "Projets",
+    "emptyState": "Aucun projet dans cette catégorie pour le moment.",
+    "viewProject": "Voir le projet",
+    "iconGithub": "GitHub",
+    "iconLiveDemo": "Démo en ligne",
+    "iconWatchDemo": "Voir la démo",
+    "iconArchDiagram": "Schéma d'architecture"
+  },
+  "modal": {
+    "close": "Fermer",
+    "solo": "Solo",
+    "teamOf": "Équipe de {count}",
+    "techStack": "Stack technique",
+    "topics": "Sujets",
+    "architecture": "Architecture",
+    "openFullSize": "Voir en taille réelle",
+    "github": "GitHub",
+    "watchDemo": "Voir la démo",
+    "liveDemo": "Démo en ligne"
+  },
+  "about": {
+    "label": "À PROPOS",
+    "titleLine1": "Je construis des choses",
+    "titleLine2": "qui comptent.",
+    "text1Before": "Je suis Camilo González, développeur full-stack et ingénieur data & IA. Je travaille à l'intersection de trois domaines :",
+    "text1Web": "développement web",
+    "text1Big": "big data",
+    "text1And": "et",
+    "text1Ai": "intelligence artificielle",
+    "text1After": "— de la conception d'interfaces utilisateur à l'élaboration de pipelines ETL distribués et à l'entraînement de modèles de deep learning.",
+    "text2": "Mes projets couvrent les pipelines de données, les modèles de machine learning, les applications full-stack et l'infrastructure cloud — j'aime résoudre un problème de bout en bout.",
+    "text3": "Je pense en solutions qui fonctionnent, pas seulement en stacks techniques.",
+    "professionalExperience": "Expérience professionnelle",
+    "skillsFrontend": "Frontend",
+    "skillsBackend": "Backend",
+    "skillsData": "Data & IA",
+    "skillsInfra": "Infra"
+  },
+  "footer": {
+    "getInTouch": "ME CONTACTER",
+    "copy": "© {year} Camilo González"
+  }
+}

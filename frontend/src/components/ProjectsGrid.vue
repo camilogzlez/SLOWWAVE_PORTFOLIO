@@ -3,9 +3,9 @@
     <div class="container">
       <!-- Section header -->
       <div class="section-header">
-        <p class="section-label">SELECTED WORK</p>
+        <p class="section-label">{{ t('projects.sectionLabel') }}</p>
         <h2 class="section-title">
-          <span class="text-outline">My</span> Projects
+          <span class="text-outline">{{ t('projects.titleOutline') }}</span> {{ t('projects.titleRest') }}
         </h2>
       </div>
 
@@ -34,7 +34,7 @@
 
       <!-- Empty state -->
       <div v-if="!filtered.length && !loading" class="empty-state">
-        <p>No projects in this category yet.</p>
+        <p>{{ t('projects.emptyState') }}</p>
       </div>
 
       <!-- Skeleton loading -->
@@ -47,7 +47,10 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import ProjectCard from './ProjectCard.vue'
+
+const { t } = useI18n()
 
 const props = defineProps({
   projects: { type: Array, default: () => [] },

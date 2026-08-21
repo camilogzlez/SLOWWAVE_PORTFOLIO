@@ -17,21 +17,25 @@
           <span>González</span>
         </h1>
         <p class="hero-sub">
-          From raw data to real products. <br /> I engineer the intelligence behind the interface.
+          {{ t('hero.subLine1') }} <br /> {{ t('hero.subLine2') }}
         </p>
       </div>
     </div>
 
     <div class="scroll-indicator">
-      <span class="scroll-label">scroll</span>
+      <span class="scroll-label">{{ t('hero.scroll') }}</span>
       <div class="scroll-line"></div>
     </div>
   </section>
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
+
 defineProps({ tags: Array, activeTag: String })
 defineEmits(['filter'])
+
+const { t } = useI18n()
 </script>
 
 <style scoped>

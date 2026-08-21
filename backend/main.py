@@ -1,6 +1,7 @@
-from fastapi import FastAPI, Depends, HTTPException, UploadFile, File
+from fastapi import FastAPI, Depends, Header, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, field_validator
 from typing import Optional
@@ -17,8 +18,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-os.makedirs("uploads", exist_ok=True)
-app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+# In production this points at the Railway volume mount (e.g. /data/uploads)
+# so uploaded images survive redeploys.
+UPLOADS_DIR = os.environ.get("UPLOADS_DIR", "uploads")
+os.makedirs(UPLOADS_DIR, exist_ok=True)
+app.mount("/uploads", StaticFiles(directory=UPLOADS_DIR), name="uploads")
 
 create_tables()
 
@@ -29,6 +33,22 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+# Shared secret gating every write endpoint (the admin UI's PIN screen sends
+# it as X-Admin-Token). Left unset in local dev to skip the check; set
+# ADMIN_TOKEN in Railway to actually lock these routes down in production.
+ADMIN_TOKEN = os.environ.get("ADMIN_TOKEN")
+
+
+def require_admin(x_admin_token: Optional[str] = Header(None, alias="X-Admin-Token")):
+    if ADMIN_TOKEN and x_admin_token != ADMIN_TOKEN:
+        raise HTTPException(status_code=401, detail="Invalid admin token")
+
+
+@app.get("/api/admin/ping")
+def admin_ping(_: None = Depends(require_admin)):
+    return {"ok": True}
 
 
 class ProjectCreate(BaseModel):
@@ -73,7 +93,7 @@ class ReorderItem(BaseModel):
     order: int
 
 @app.put("/api/projects/reorder")
-def reorder_projects(items: list[ReorderItem], db: Session = Depends(get_db)):
+def reorder_projects(items: list[ReorderItem], db: Session = Depends(get_db), _auth: None = Depends(require_admin)):
     for item in items:
         db.query(Project).filter(Project.id == item.id).update({"order": item.order})
     db.commit()
@@ -89,7 +109,7 @@ def get_project(slug: str, db: Session = Depends(get_db)):
 
 
 @app.post("/api/projects", status_code=201)
-def create_project(data: ProjectCreate, db: Session = Depends(get_db)):
+def create_project(data: ProjectCreate, db: Session = Depends(get_db), _auth: None = Depends(require_admin)):
     p = Project(**data.model_dump())
     db.add(p)
     db.commit()
@@ -98,7 +118,7 @@ def create_project(data: ProjectCreate, db: Session = Depends(get_db)):
 
 
 @app.put("/api/projects/{project_id}")
-def update_project(project_id: int, data: ProjectUpdate, db: Session = Depends(get_db)):
+def update_project(project_id: int, data: ProjectUpdate, db: Session = Depends(get_db), _auth: None = Depends(require_admin)):
     p = db.query(Project).filter(Project.id == project_id).first()
     if not p:
         raise HTTPException(status_code=404, detail="Not found")
@@ -110,7 +130,7 @@ def update_project(project_id: int, data: ProjectUpdate, db: Session = Depends(g
 
 
 @app.delete("/api/projects/{project_id}", status_code=204)
-def delete_project(project_id: int, db: Session = Depends(get_db)):
+def delete_project(project_id: int, db: Session = Depends(get_db), _auth: None = Depends(require_admin)):
     p = db.query(Project).filter(Project.id == project_id).first()
     if not p:
         raise HTTPException(status_code=404, detail="Not found")
@@ -119,10 +139,31 @@ def delete_project(project_id: int, db: Session = Depends(get_db)):
 
 
 @app.post("/api/upload")
-async def upload_file(file: UploadFile = File(...)):
+async def upload_file(file: UploadFile = File(...), _auth: None = Depends(require_admin)):
     ext = os.path.splitext(file.filename)[1]
     filename = f"{uuid.uuid4().hex}{ext}"
-    path = os.path.join("uploads", filename)
+    path = os.path.join(UPLOADS_DIR, filename)
     with open(path, "wb") as f:
         shutil.copyfileobj(file.file, f)
     return {"url": f"/uploads/{filename}"}
+
+
+# --- Serve the built Vue frontend (single-service deploy) ---------------
+# The Dockerfile builds the frontend and copies its `dist/` output here.
+# In local dev (Vite dev server on :5173) this directory doesn't exist, so
+# everything below is skipped and the API runs standalone as before.
+STATIC_DIR = os.environ.get("STATIC_DIR", "static")
+
+if os.path.isdir(STATIC_DIR):
+    app.mount("/assets", StaticFiles(directory=os.path.join(STATIC_DIR, "assets")), name="assets")
+
+    @app.get("/{full_path:path}")
+    async def spa(full_path: str):
+        # Serves any other built file at its exact path (favicon, images
+        # referenced from index.html, ...); anything else -- including
+        # client-side routes like /fr or /admin -- falls back to
+        # index.html so vue-router can take over.
+        candidate = os.path.join(STATIC_DIR, full_path)
+        if full_path and os.path.isfile(candidate):
+            return FileResponse(candidate)
+        return FileResponse(os.path.join(STATIC_DIR, "index.html"))

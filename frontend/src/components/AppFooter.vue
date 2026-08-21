@@ -3,14 +3,14 @@
     <div class="container footer-inner">
       <div class="footer-top">
         <div class="footer-left">
-          <p class="footer-label">GET IN TOUCH</p>
+          <p class="footer-label">{{ t('footer.getInTouch') }}</p>
           <a href="mailto:camilogzlez@gmail.com" class="footer-email">
             camilogzlez@gmail.com
           </a>
         </div>
       </div>
       <div class="footer-bottom">
-        <p class="footer-copy">&copy; {{ year }} Camilo González</p>
+        <p class="footer-copy">{{ t('footer.copy', { year }) }}</p>
         <div class="footer-links">
           <a href="https://github.com/camilogzlez" target="_blank" rel="noopener" class="footer-link">
             GitHub
@@ -25,6 +25,9 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 const year = new Date().getFullYear()
 </script>
 

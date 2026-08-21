@@ -1,21 +1,24 @@
 <template>
   <header :class="['site-header', { scrolled }]">
     <div class="container header-inner">
-      <a href="/" class="logo" aria-label="Slowwave — home">
+      <router-link :to="`/${locale}`" class="logo" aria-label="Slowwave — home">
         <img src="../assets/slowwave-logo.png" alt="Slowwave" class="logo-img" />
-      </a>
+      </router-link>
 
       <nav class="nav">
-        <a href="#projects" class="nav-link">Work</a>
-        <a href="#about" class="nav-link">About</a>
-        <a href="#contact" class="nav-link">Contact</a>
+        <a href="#projects" class="nav-link">{{ t('nav.work') }}</a>
+        <a href="#about" class="nav-link">{{ t('nav.about') }}</a>
+        <a href="#contact" class="nav-link">{{ t('nav.contact') }}</a>
+        <button type="button" class="lang-switch" @click="switchLocale">{{ otherLocale }}</button>
       </nav>
     </div>
   </header>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useRoute, useRouter } from 'vue-router'
 
 const scrolled = ref(false)
 
@@ -25,6 +28,17 @@ function onScroll() {
 
 onMounted(() => window.addEventListener('scroll', onScroll))
 onUnmounted(() => window.removeEventListener('scroll', onScroll))
+
+const { t, locale } = useI18n()
+const route = useRoute()
+const router = useRouter()
+
+const otherLocale = computed(() => (locale.value === 'fr' ? 'EN' : 'FR'))
+
+function switchLocale() {
+  const next = locale.value === 'fr' ? 'en' : 'fr'
+  router.push({ path: `/${next}`, hash: route.hash })
+}
 </script>
 
 <style scoped>
@@ -92,4 +106,16 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
 
 .nav-link:hover { color: var(--ink); }
 .nav-link:hover::after { transform: scaleX(1); }
+
+.lang-switch {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--ink-mid);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 4px 8px;
+  transition: color 0.2s, border-color 0.2s;
+}
+.lang-switch:hover { color: var(--ink); border-color: var(--ink); }
 </style>

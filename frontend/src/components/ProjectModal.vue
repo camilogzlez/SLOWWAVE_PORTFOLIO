@@ -6,7 +6,7 @@
 
     <Transition name="modal">
       <div v-if="project" class="modal-panel" role="dialog" :aria-label="project.title" aria-modal="true">
-        <button class="modal-close" @click="$emit('close')" aria-label="Close">
+        <button class="modal-close" @click="$emit('close')" :aria-label="t('modal.close')">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
             <path d="M4 4l12 12M16 4L4 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
           </svg>
@@ -38,25 +38,25 @@
               <span v-if="project.project_type" class="meta-type">{{ typeLabel }}</span>
               <span v-if="project.year" class="meta-item">{{ project.year }}</span>
               <span v-if="project.team_size" class="meta-item">
-                {{ project.team_size === 1 ? 'Solo' : `Team of ${project.team_size}` }}
+                {{ project.team_size === 1 ? t('modal.solo') : t('modal.teamOf', { count: project.team_size }) }}
               </span>
             </div>
 
             <h2 class="modal-title">{{ project.title }}</h2>
 
-            <p class="modal-desc">{{ project.long_description || project.description }}</p>
+            <p class="modal-desc">{{ localizedProject.long_description || localizedProject.description }}</p>
 
             <!-- Tech stack -->
             <div class="modal-section">
-              <h4 class="modal-section-label">Tech Stack</h4>
+              <h4 class="modal-section-label">{{ t('modal.techStack') }}</h4>
               <div class="tag-list">
-                <span v-for="t in project.tech_stack" :key="t" class="tech-tag">{{ t }}</span>
+                <span v-for="tech in project.tech_stack" :key="tech" class="tech-tag">{{ tech }}</span>
               </div>
             </div>
 
             <!-- Topics -->
             <div v-if="project.tags?.length" class="modal-section">
-              <h4 class="modal-section-label">Topics</h4>
+              <h4 class="modal-section-label">{{ t('modal.topics') }}</h4>
               <div class="tag-list">
                 <span v-for="tag in project.tags" :key="tag" class="pill" style="cursor:default">{{ tag }}</span>
               </div>
@@ -64,14 +64,14 @@
 
             <!-- Architecture diagram -->
             <div v-if="project.arch_diagram" class="modal-section" ref="archRef">
-              <h4 class="modal-section-label">Architecture</h4>
+              <h4 class="modal-section-label">{{ t('modal.architecture') }}</h4>
               <a :href="project.arch_diagram" target="_blank" rel="noopener" class="arch-diagram-wrap">
                 <img :src="project.arch_diagram" alt="Architecture diagram" class="arch-diagram" />
                 <span class="arch-diagram-overlay">
                   <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
                     <path d="M7 3H3v12h12v-4M10 3h5v5M15 3L8 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
-                  Open full size
+                  {{ t('modal.openFullSize') }}
                 </span>
               </a>
             </div>
@@ -83,7 +83,7 @@
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
                   <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
                 </svg>
-                GitHub
+                {{ t('modal.github') }}
               </a>
               <a v-if="project.video_url && !videoEmbed" :href="project.video_url" target="_blank" rel="noopener" class="modal-link">
                 <!-- Play icon -->
@@ -91,13 +91,13 @@
                   <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.4"/>
                   <path d="M6.5 5.5l4 2.5-4 2.5V5.5z" fill="currentColor"/>
                 </svg>
-                Watch demo
+                {{ t('modal.watchDemo') }}
               </a>
               <a v-if="project.demo_url" :href="project.demo_url" target="_blank" rel="noopener" class="modal-link modal-link--primary">
                 <svg width="14" height="14" viewBox="-1 0 12 12" fill="currentColor">
                   <path d="M2 1.5l9 4.5-9 4.5V1.5z"/>
                 </svg>
-                Live demo
+                {{ t('modal.liveDemo') }}
               </a>
             </div>
           </div>
@@ -109,14 +109,21 @@
 
 <script setup>
 import { computed, watch, ref, nextTick } from 'vue'
+import { useI18n } from 'vue-i18n'
 import CategoryIcon from './CategoryIcon.vue'
+import { localizeProject } from '../i18n/projectTranslations'
 
 const props = defineProps({ project: Object, scrollTo: String })
 defineEmits(['close'])
 
+const { t, locale } = useI18n()
+
 const archRef = ref(null)
 const modalScroll = ref(null)
 
+const localizedProject = computed(() => localizeProject(props.project, locale.value) ?? {})
+
+// category/project-type badges stay in English in both locales by design
 const labels = { WEB: 'Web Dev', BIGDATA: 'Big Data', AI: 'AI / ML', DEVOPS: 'DevOps' }
 const categoryLabel = computed(() => labels[props.project?.category] ?? props.project?.category)
 

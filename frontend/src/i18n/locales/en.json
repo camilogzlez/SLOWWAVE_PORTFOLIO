@@ -1,0 +1,57 @@
+{
+  "nav": {
+    "work": "Work",
+    "about": "About",
+    "contact": "Contact"
+  },
+  "hero": {
+    "subLine1": "From raw data to real products.",
+    "subLine2": "I engineer the intelligence behind the interface.",
+    "scroll": "scroll"
+  },
+  "projects": {
+    "sectionLabel": "SELECTED WORK",
+    "titleOutline": "My",
+    "titleRest": "Projects",
+    "emptyState": "No projects in this category yet.",
+    "viewProject": "View project",
+    "iconGithub": "GitHub",
+    "iconLiveDemo": "Live demo",
+    "iconWatchDemo": "Watch demo",
+    "iconArchDiagram": "Architecture diagram"
+  },
+  "modal": {
+    "close": "Close",
+    "solo": "Solo",
+    "teamOf": "Team of {count}",
+    "techStack": "Tech Stack",
+    "topics": "Topics",
+    "architecture": "Architecture",
+    "openFullSize": "Open full size",
+    "github": "GitHub",
+    "watchDemo": "Watch demo",
+    "liveDemo": "Live demo"
+  },
+  "about": {
+    "label": "ABOUT ME",
+    "titleLine1": "Building things",
+    "titleLine2": "that matter.",
+    "text1Before": "I'm Camilo González, a full-stack developer and data and AI engineer. I work at the intersection of",
+    "text1Web": "web development",
+    "text1Big": "big data",
+    "text1And": "and",
+    "text1Ai": "artificial intelligence",
+    "text1After": "— from crafting user interfaces to designing distributed ETL pipelines and training deep learning models.",
+    "text2": "My projects span data pipelines, machine learning models, full-stack applications and cloud infrastructure — I enjoy tackling a problem end to end.",
+    "text3": "I think in solutions that work, not just stacks.",
+    "professionalExperience": "Professional experience",
+    "skillsFrontend": "Frontend",
+    "skillsBackend": "Backend",
+    "skillsData": "Data & AI",
+    "skillsInfra": "Infra"
+  },
+  "footer": {
+    "getInTouch": "GET IN TOUCH",
+    "copy": "© {year} Camilo González"
+  }
+}

@@ -10,9 +10,9 @@
 
     <div class="card-body">
       <h3 class="card-title">{{ project.title }}</h3>
-      <p class="card-desc">{{ project.description }}</p>
+      <p class="card-desc">{{ localizedProject.description }}</p>
       <div class="card-stack">
-        <span v-for="t in project.tech_stack.slice(0, 4)" :key="t" class="stack-tag">{{ t }}</span>
+        <span v-for="tech in project.tech_stack.slice(0, 4)" :key="tech" class="stack-tag">{{ tech }}</span>
         <span v-if="project.tech_stack.length > 4" class="stack-tag stack-more">
           +{{ project.tech_stack.length - 4 }}
         </span>
@@ -21,22 +21,22 @@
 
     <!-- Direct-action link icons — click without opening modal -->
     <div v-if="project.github_url || project.demo_url || project.video_url || project.arch_diagram" class="card-icons" @click.stop>
-      <a v-if="project.github_url" :href="project.github_url" target="_blank" rel="noopener" class="card-icon" title="GitHub">
+      <a v-if="project.github_url" :href="project.github_url" target="_blank" rel="noopener" class="card-icon" :title="t('projects.iconGithub')">
         <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
           <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
         </svg>
       </a>
-      <a v-if="project.demo_url" :href="project.demo_url" target="_blank" rel="noopener" class="card-icon" title="Live demo">
+      <a v-if="project.demo_url" :href="project.demo_url" target="_blank" rel="noopener" class="card-icon" :title="t('projects.iconLiveDemo')">
         <svg width="13" height="13" viewBox="-1 0 12 12" fill="currentColor">
           <path d="M2 1.5l9 4.5-9 4.5V1.5z"/>
         </svg>
       </a>
-      <button v-if="project.video_url" class="card-icon" title="Watch demo" @click.stop="$emit('open', project, 'video')">
+      <button v-if="project.video_url" class="card-icon" :title="t('projects.iconWatchDemo')" @click.stop="$emit('open', project, 'video')">
         <svg width="13" height="13" viewBox="-1 0 12 12" fill="currentColor">
           <path d="M2 1.5l9 4.5-9 4.5V1.5z"/>
         </svg>
       </button>
-      <button v-if="project.arch_diagram" class="card-icon" title="Architecture diagram" @click.stop="$emit('open', project, 'arch')">
+      <button v-if="project.arch_diagram" class="card-icon" :title="t('projects.iconArchDiagram')" @click.stop="$emit('open', project, 'arch')">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
           <rect x="1" y="4" width="4" height="3" rx="0.5"/>
           <rect x="9" y="1" width="4" height="3" rx="0.5"/>
@@ -49,7 +49,7 @@
     <span v-if="project.project_type" class="card-type">{{ typeLabel }}</span>
 
     <div class="card-hover-cta">
-      <span>View project</span>
+      <span>{{ t('projects.viewProject') }}</span>
       <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
         <path d="M1 6h10M6 1l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
@@ -58,11 +58,19 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import CategoryIcon from './CategoryIcon.vue'
+import { localizeProject } from '../i18n/projectTranslations'
 
 const props = defineProps({ project: Object })
 defineEmits(['open'])  // open(project, section?) — section: 'video' | 'arch' | undefined
 
+const { t, locale } = useI18n()
+
+const localizedProject = computed(() => localizeProject(props.project, locale.value))
+
+// category/project-type badges stay in English in both locales by design
 const labels = { WEB: 'Web Dev', BIGDATA: 'Big Data', AI: 'AI / ML', DEVOPS: 'DevOps' }
 const categoryLabel = labels[props.project.category] ?? props.project.category
 
