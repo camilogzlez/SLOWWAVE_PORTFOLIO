@@ -137,7 +137,7 @@ const videoEmbed = computed(() => {
   const yt = url.match(/(?:v=|youtu\.be\/)([A-Za-z0-9_-]{11})/)
   if (yt) return `https://www.youtube.com/embed/${yt[1]}?rel=0&mute=1&autoplay=${autoplay}`
   const loom = url.match(/loom\.com\/(?:share|embed)\/([a-zA-Z0-9]+)/)
-  if (loom) return `https://www.loom.com/embed/${loom[1]}?mute=1&autoplay=${autoplay}`
+  if (loom) return `https://www.loom.com/embed/${loom[1]}?muted=1&autoplay=${autoplay}`
   return null
 })
 
