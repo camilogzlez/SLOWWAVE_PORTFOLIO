@@ -10,12 +10,12 @@
         type="password"
         class="pin-input"
         placeholder="••••"
-        maxlength="8"
+        maxlength="64"
         @keydown.enter="checkPin"
         autocomplete="current-password"
       />
       <p v-if="pinError" class="pin-error">Wrong PIN. Try again.</p>
-      <button class="btn-primary" @click="checkPin">Enter</button>
+      <button class="btn-primary" :disabled="pinChecking" @click="checkPin">{{ pinChecking ? 'Checking…' : 'Enter' }}</button>
     </div>
   </div>
 
@@ -160,27 +160,49 @@ import ProjectForm from '../components/admin/ProjectForm.vue'
 import EditIcon from '../components/admin/EditIcon.vue'
 import TrashIcon from '../components/admin/TrashIcon.vue'
 
-const PIN = '2503' // change this to your preferred PIN
+// The PIN doubles as the ADMIN_TOKEN the backend expects on write requests
+// (set via the ADMIN_TOKEN env var in production) -- it's verified against
+// the server via /api/admin/ping rather than checked client-side, so the
+// gate actually protects the API and not just this screen.
+const storedToken = sessionStorage.getItem('admin_token')
+if (storedToken) axios.defaults.headers.common['X-Admin-Token'] = storedToken
 
-const authed = ref(sessionStorage.getItem('admin_authed') === '1')
+const authed = ref(!!storedToken)
 const pinEntry = ref('')
 const pinError = ref(false)
+const pinChecking = ref(false)
 const pinInput = ref(null)
 
-function checkPin() {
-  if (pinEntry.value === PIN) {
+// if the token becomes invalid (server restarted with a new ADMIN_TOKEN,
+// or a stale session), drop back to the PIN gate on the next 401
+axios.interceptors.response.use(
+  res => res,
+  err => {
+    if (err.response?.status === 401 && authed.value) logout()
+    return Promise.reject(err)
+  }
+)
+
+async function checkPin() {
+  pinChecking.value = true
+  try {
+    await axios.get('/api/admin/ping', { headers: { 'X-Admin-Token': pinEntry.value } })
+    axios.defaults.headers.common['X-Admin-Token'] = pinEntry.value
+    sessionStorage.setItem('admin_token', pinEntry.value)
     authed.value = true
-    sessionStorage.setItem('admin_authed', '1')
     pinError.value = false
-  } else {
+  } catch {
     pinError.value = true
     pinEntry.value = ''
     nextTick(() => pinInput.value?.focus())
+  } finally {
+    pinChecking.value = false
   }
 }
 
 function logout() {
-  sessionStorage.removeItem('admin_authed')
+  sessionStorage.removeItem('admin_token')
+  delete axios.defaults.headers.common['X-Admin-Token']
   authed.value = false
 }
 

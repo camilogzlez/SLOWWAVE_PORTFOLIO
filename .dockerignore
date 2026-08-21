@@ -1,0 +1,10 @@
+.git
+**/__pycache__
+**/*.pyc
+backend/venv
+backend/portfolio.db
+backend/uploads
+frontend/node_modules
+frontend/dist
+frontend/.vite
+**/.DS_Store
