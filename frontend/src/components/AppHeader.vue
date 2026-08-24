@@ -69,6 +69,7 @@ function switchLocale() {
 .logo {
   display: flex;
   align-items: center;
+  flex-shrink: 0;
   transition: opacity 0.2s;
 }
 .logo:hover { opacity: 0.7; }
@@ -118,4 +119,14 @@ function switchLocale() {
   transition: color 0.2s, border-color 0.2s;
 }
 .lang-switch:hover { color: var(--ink); border-color: var(--ink); }
+
+@media (max-width: 480px) {
+  /* logo has flex-shrink:0 (never distorts), so without this the nav would
+     be squeezed below its own content width instead -- shrink everything
+     down so the whole row actually fits at small widths */
+  .logo-img { height: 40px; }
+  .nav { gap: 14px; }
+  .nav-link { font-size: 11px; }
+  .lang-switch { font-size: 11px; padding: 3px 6px; }
+}
 </style>
