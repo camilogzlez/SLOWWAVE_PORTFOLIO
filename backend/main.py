@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends, Header, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, RedirectResponse
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, field_validator
 from typing import Optional
@@ -146,6 +146,18 @@ async def upload_file(file: UploadFile = File(...), _auth: None = Depends(requir
     with open(path, "wb") as f:
         shutil.copyfileobj(file.file, f)
     return {"url": f"/uploads/{filename}"}
+
+
+# --- /photography -> SLOWWAVE photography app (Heroku) -------------------
+# The photography app lives on its own subdomain; keep slowwave.tech/photography
+# working as a short link. Registered before the SPA catch-all below.
+PHOTOGRAPHY_URL = os.environ.get("PHOTOGRAPHY_URL", "https://photography.slowwave.tech").rstrip("/")
+
+
+@app.get("/photography")
+@app.get("/photography/{rest:path}")
+async def photography_redirect(rest: str = ""):
+    return RedirectResponse(f"{PHOTOGRAPHY_URL}/{rest}", status_code=302)
 
 
 # --- Serve the built Vue frontend (single-service deploy) ---------------
